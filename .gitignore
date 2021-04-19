@@ -1,1 +1,4 @@
 .vscode
+
+sqlite3.exe
+client.py
