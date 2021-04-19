@@ -1,8 +1,61 @@
-from flask import Flask, jsonify
+import flask
+from flask import Flask, jsonify, g
+import time
+import threading
+from threading import Thread
+from flask_apscheduler import APScheduler
+import db_work
+import sqlite3
+
+class Config:
+    SCHEDULER_API_ENABLED = True
+
 app = Flask(__name__)
+app.config.from_object(Config())
+
+scheduler = APScheduler()
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = db_work.init_db()
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+@scheduler.task('interval', id='week_interval', weeks=2, misfire_grace_time=900)
+def cache():
+    with scheduler.app.app_context():
+        conn = get_db()
+        db_work.archivate_data(conn)
+
 @app.route('/')
 def index():
-    return jsonify("Hello world")
+    conn = get_db()
+    return jsonify(db_work.get_data(conn))
 
-if __name__ == "__main__":
+@app.route('/cur_time')
+def get_cur_time():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT strftime('%F', 'now') FROM  month_data")
+    return jsonify(cur.fetchone())
+
+@app.route('/add_record', methods=['POST'])
+def add_record():
+    conn = get_db()
+    res = db_work.add_data(conn, flask.request.data)
+    return jsonify(res)
+
+if __name__ == "__main__": 
+    with app.app_context():
+        g._database = db_work.init_db()
     app.run(debug=True)
