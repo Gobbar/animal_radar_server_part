@@ -46,7 +46,7 @@ def index():
 def get_cur_time():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT strftime('%F', 'now') FROM  month_data")
+    cur.execute("SELECT strftime('%s', 'now') FROM  month_data")
     return jsonify(cur.fetchone())
 
 @app.route('/add_record', methods=['POST'])
