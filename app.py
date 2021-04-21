@@ -55,6 +55,15 @@ def add_record():
     res = db_work.add_data(conn, flask.request.data)
     return jsonify(res)
 
+@app.route('/get_day', methods=['GET'])
+def get_day():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM month_data WHERE animal_date_time > strftime('%s', date('now', '-1 day'))")
+    res = cur.fetchall()
+    cur.close()
+    return jsonify(res)
+
 if __name__ == "__main__": 
     with app.app_context():
         g._database = db_work.init_db()

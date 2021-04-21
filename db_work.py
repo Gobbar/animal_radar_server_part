@@ -52,3 +52,8 @@ def get_data(db_connection):
     res = cur.fetchall()
     cur.close()
     return res
+
+def get_some_data(db_connection):
+    cur = db_connection.cursor()
+    cur.execute("SELECT * FROM month_data WHERE animal_date_time > date('now', '-1 day')")
+    return cur.fetchall()
