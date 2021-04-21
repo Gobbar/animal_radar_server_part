@@ -46,13 +46,22 @@ def index():
 def get_cur_time():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT strftime('%F', 'now') FROM  month_data")
+    cur.execute("SELECT strftime('%s', 'now') FROM  month_data")
     return jsonify(cur.fetchone())
 
 @app.route('/add_record', methods=['POST'])
 def add_record():
     conn = get_db()
     res = db_work.add_data(conn, flask.request.data)
+    return jsonify(res)
+
+@app.route('/get_day', methods=['GET'])
+def get_day():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM month_data WHERE animal_date_time > strftime('%s', date('now', '-1 day'))")
+    res = cur.fetchall()
+    cur.close()
     return jsonify(res)
 
 if __name__ == "__main__": 
