@@ -37,10 +37,16 @@ def cache():
         conn = get_db()
         db_work.archivate_data(conn)
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
     conn = get_db()
     return jsonify(db_work.get_data(conn))
+
+@app.route('/getLocationData', methods=['POST'])
+def get_location_data():
+    conn = get_db()
+    #return jsonify(db_work.get_location_data(conn, flask.request.data))
+    return jsonify(db_work.get_location_data(conn, flask.request.data))
 
 @app.route('/cur_time')
 def get_cur_time():
@@ -51,6 +57,7 @@ def get_cur_time():
 
 @app.route('/add_record', methods=['POST'])
 def add_record():
+    print(flask.request.data)
     conn = get_db()
     res = db_work.add_data(conn, flask.request.data)
     return jsonify(res)
