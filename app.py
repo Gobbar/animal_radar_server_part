@@ -4,6 +4,7 @@ import time
 import threading
 from threading import Thread
 from flask_apscheduler import APScheduler
+import flask_apscheduler
 import db_work
 import sqlite3
 
@@ -55,12 +56,18 @@ def get_cur_time():
     cur.execute("SELECT strftime('%s', 'now') FROM  month_data")
     return jsonify(cur.fetchone())
 
-@app.route('/add_record', methods=['POST'])
+@app.route('/addRecords', methods=['POST'])
 def add_record():
-    print(flask.request.data)
     conn = get_db()
     res = db_work.add_data(conn, flask.request.data)
     return jsonify(res)
+
+
+#def add_record():
+#    print(flask.request.data)
+#    conn = get_db()
+#    res = db_work.add_data(conn, flask.request.data)
+#    return jsonify(res)
 
 @app.route('/get_day', methods=['GET'])
 def get_day():
