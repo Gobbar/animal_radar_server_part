@@ -78,6 +78,14 @@ def get_day():
     cur.close()
     return jsonify(res)
 
+@app.route('/clearAllDB')
+def clear_db():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM month_data")
+    cur.close()
+    return true
+
 if __name__ == "__main__": 
     with app.app_context():
         g._database = db_work.init_db()
