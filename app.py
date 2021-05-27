@@ -82,9 +82,9 @@ def get_day():
 def clear_db():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM month_data")
+    cur.execute("DELETE FROM month_data WHERE id IS NOT NULL")
     cur.close()
-    return true
+    return True
 
 if __name__ == "__main__": 
     with app.app_context():
