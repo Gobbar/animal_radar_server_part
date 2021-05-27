@@ -82,7 +82,8 @@ def get_day():
 def clear_db():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM month_data")
+    cur.execute("DELETE FROM month_data where id is not null")
+    conn.commit()
     cur.close()
     return jsonify(True)
 
